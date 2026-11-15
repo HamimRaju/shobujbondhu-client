@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
+/* Dark mode is driven by <html data-theme="dark"> (see src/lib/theme.ts). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ShobujBondhu brand palette */
+@theme {
+  --color-brand-forest: #123b2d;
+  --color-brand-ivory: #f7f6ef;
+  --color-brand-sage: #dce9d8;
+  --color-brand-amber: #d9a441;
+}
+
+/* Semantic tokens: light */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f6ef;
+  --foreground: #123b2d;
+  --surface: #ffffff;
+  --surface-muted: #dce9d8;
+  --muted: #4a6358;
+  --border: #c9d8c5;
+  --primary: #123b2d;
+  --primary-foreground: #f7f6ef;
+  --accent: #d9a441;
+  --accent-foreground: #123b2d;
+  --ring: #123b2d;
+  color-scheme: light;
+}
+
+/* Semantic tokens: dark */
+[data-theme="dark"] {
+  --background: #0c1a14;
+  --foreground: #f1f1e8;
+  --surface: #12261d;
+  --surface-muted: #1a3328;
+  --muted: #a9bdb1;
+  --border: #254234;
+  --primary: #d9a441;
+  --primary-foreground: #123b2d;
+  --accent: #dce9d8;
+  --accent-foreground: #123b2d;
+  --ring: #d9a441;
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plus-jakarta), var(--font-dm-sans), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-bengali: var(--font-noto-bengali), var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Bengali text: dedicated font and roomier line height (zero specificity so utilities still win). */
+:where(:lang(bn)) {
+  font-family: var(--font-bengali);
+  line-height: 1.6;
 }
