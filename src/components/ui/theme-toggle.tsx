@@ -16,12 +16,12 @@ export function ThemeToggle() {
       aria-label={`Switch to ${nextTheme} theme`}
       aria-pressed={theme === "dark"}
       title={`Switch to ${nextTheme} theme`}
-      variant="ghost"
+      variant="outline"
       size="sm"
-      className="size-10 px-0"
+      className="size-12 px-0"
     >
-      <Moon className="size-5 dark:hidden" aria-hidden="true" />
-      <Sun className="hidden size-5 dark:block" aria-hidden="true" />
+      <Moon className="size-6 dark:hidden" aria-hidden="true" />
+      <Sun className="hidden size-6 dark:block" aria-hidden="true" />
     </Button>
   );
 }
