@@ -6,9 +6,12 @@ import type { PhotoTone, SiteImage } from "@/types";
 const tones: Record<PhotoTone, string> = {
   forest:
     "bg-gradient-to-br from-brand-forest via-[#1c5642] to-[#2f7a5c] text-brand-sage",
-  sage: "bg-gradient-to-br from-brand-sage to-[#bcd3b8] text-brand-forest",
-  amber: "bg-gradient-to-br from-[#f3e0b3] to-brand-amber text-brand-forest",
-  ivory: "bg-gradient-to-br from-white to-brand-sage text-brand-forest",
+  sage:
+    "bg-gradient-to-br from-brand-sage to-[#bcd3b8] text-brand-forest dark:from-brand-forest dark:to-surface-muted dark:text-brand-sage",
+  amber:
+    "bg-gradient-to-br from-brand-ivory to-brand-amber text-brand-forest dark:from-brand-forest dark:to-[#3b3020] dark:text-brand-amber",
+  ivory:
+    "bg-gradient-to-br from-brand-ivory to-brand-sage text-brand-forest dark:from-surface-muted dark:to-surface dark:text-brand-amber",
 };
 
 type PhotoFrameProps = {
@@ -47,7 +50,8 @@ export function PhotoFrame({
           fill
           sizes={sizes}
           priority={priority}
-          className="object-cover"
+          style={{ objectPosition: image.objectPosition }}
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
         />
       </div>
     );

@@ -29,14 +29,17 @@ type ButtonAsLink = CommonProps &
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-full border border-transparent font-semibold tracking-[-0.01em] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/20 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-primary-foreground hover:opacity-90",
-  accent: "bg-accent text-accent-foreground hover:opacity-90",
+  primary:
+    "bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/25",
+  accent:
+    "bg-accent text-accent-foreground shadow-md shadow-accent/20 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/25",
   outline:
-    "border border-border bg-transparent text-foreground hover:bg-surface-muted",
-  ghost: "bg-transparent text-foreground hover:bg-surface-muted",
+    "border-border/80 bg-surface text-foreground shadow-sm hover:-translate-y-0.5 hover:border-primary/40 hover:bg-surface-muted hover:shadow-md",
+  ghost:
+    "bg-transparent text-foreground hover:bg-surface-muted hover:shadow-sm",
 };
 
 const sizes: Record<Size, string> = {
@@ -46,35 +49,40 @@ const sizes: Record<Size, string> = {
 };
 
 export function Button(props: ButtonProps) {
-  const { variant = "primary", size = "md", className, children } = props;
-  const classes = cn(base, variants[variant], sizes[size], className);
-
   if (props.href !== undefined) {
     const {
       href,
-      variant: _v,
-      size: _s,
-      className: _c,
-      children: _ch,
-      ...rest
+      variant = "primary",
+      size = "md",
+      className,
+      children,
+      ...linkProps
     } = props;
     return (
-      <Link href={href} className={classes} {...rest}>
+      <Link
+        href={href}
+        className={cn(base, variants[variant], sizes[size], className)}
+        {...linkProps}
+      >
         {children}
       </Link>
     );
   }
 
   const {
-    variant: _v,
-    size: _s,
-    className: _c,
-    children: _ch,
+    variant = "primary",
+    size = "md",
+    className,
+    children,
     type = "button",
-    ...rest
+    ...buttonProps
   } = props;
   return (
-    <button type={type} className={classes} {...rest}>
+    <button
+      type={type}
+      className={cn(base, variants[variant], sizes[size], className)}
+      {...buttonProps}
+    >
       {children}
     </button>
   );

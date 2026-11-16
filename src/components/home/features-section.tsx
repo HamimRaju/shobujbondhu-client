@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
 
 type Feature = { title: string; description: string; icon: LucideIcon };
 
@@ -43,26 +42,47 @@ export function FeaturesSection() {
     <section
       id="features"
       aria-labelledby="features-title"
-      className="scroll-mt-20 bg-surface-muted py-16 sm:py-24"
+      className="relative isolate scroll-mt-20 overflow-hidden bg-brand-forest py-9 text-brand-ivory sm:py-11"
     >
-      <Container>
-        <SectionHeading
-          id="features-title"
-          eyebrow="How it helps"
-          title="Local volunteering, made simpler"
-          description="ShobujBondhu is being built to make community action easier to find, organise and follow through."
-        />
+      <Sprout
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-8 top-1/2 hidden size-36 -translate-y-1/2 -rotate-[38deg] text-brand-amber/45 xl:block"
+        strokeWidth={1.1}
+      />
+      <Sprout
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-8 top-1/2 hidden size-36 -translate-y-1/2 rotate-[38deg] text-brand-amber/45 xl:block"
+        strokeWidth={1.1}
+      />
+      <Container className="relative">
+        <h2 id="features-title" className="sr-only">
+          Local volunteering, made simpler
+        </h2>
+        <p className="sr-only">
+          ShobujBondhu is being built to make community action easier to find,
+          organise and follow through.
+        </p>
 
-        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-x-7 gap-y-7 sm:grid-cols-2 xl:grid-cols-4">
           {features.map(({ title, description, icon: Icon }, index) => (
             <li key={title}>
               <Reveal className="h-full" delay={index * 0.06}>
-                <div className="flex h-full flex-col rounded-2xl border border-border bg-surface p-6 transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                  <span className="inline-flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                    <Icon className="size-6" aria-hidden="true" />
+                <div className="flex h-full items-start gap-3.5 sm:gap-4">
+                  <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-ivory text-brand-forest shadow-[0_5px_18px_-8px_rgba(0,0,0,0.5)] sm:size-12">
+                    <Icon
+                      className="size-5"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
                   </span>
-                  <h3 className="mt-5 text-lg font-bold tracking-tight">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted">{description}</p>
+                  <div>
+                    <h3 className="text-sm font-extrabold leading-snug tracking-tight sm:text-base">
+                      {title}
+                    </h3>
+                    <p className="mt-1.5 text-xs leading-5 text-brand-ivory/75 sm:text-[0.8rem]">
+                      {description}
+                    </p>
+                  </div>
                 </div>
               </Reveal>
             </li>

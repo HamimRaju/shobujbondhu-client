@@ -1,4 +1,4 @@
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRight, CalendarDays, Info } from "lucide-react";
 import { EventCard } from "@/components/events/event-card";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -39,15 +39,35 @@ export function EventsPreviewSection() {
           </span>
         </p>
 
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {previewEvents.map((event, index) => (
-            <li key={event.id}>
-              <Reveal className="h-full" delay={(index % 3) * 0.06}>
-                <EventCard event={event} />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
+        {previewEvents.length > 0 ? (
+          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {previewEvents.map((event, index) => (
+              <li key={event.id}>
+                <Reveal className="h-full" delay={(index % 3) * 0.06}>
+                  <EventCard event={event} />
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="mt-8 flex flex-col items-start gap-4 rounded-3xl border border-dashed border-border bg-surface px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-foreground">
+                <CalendarDays className="size-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-semibold">No events to preview yet</h3>
+                <p className="mt-1 text-sm leading-6 text-muted">
+                  Browse upcoming opportunities and find a way to take part.
+                </p>
+              </div>
+            </div>
+            <Button href="/events" variant="outline" className="shrink-0">
+              Explore events
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Button>
+          </div>
+        )}
       </Container>
     </section>
   );

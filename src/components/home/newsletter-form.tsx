@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 export function NewsletterForm() {
   const inputId = useId();
   const statusId = useId();
+  const noteId = useId();
   const [message, setMessage] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -37,15 +38,18 @@ export function NewsletterForm() {
           autoComplete="email"
           inputMode="email"
           placeholder="you@example.com"
-          aria-describedby={statusId}
-          className="h-12 w-full flex-1 rounded-full border border-border bg-surface px-5 text-base text-foreground placeholder:text-muted/70"
+          aria-describedby={`${statusId} ${noteId}`}
+          className="h-12 w-full min-w-0 flex-1 rounded-full border border-border bg-background px-5 text-base text-foreground placeholder:text-muted/70 transition-shadow focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
         />
         <Button type="submit" size="lg" className="sm:shrink-0">
           Subscribe
           <Send className="size-4" aria-hidden="true" />
         </Button>
       </div>
-      <p id={statusId} role="status" aria-live="polite" className="mt-3 min-h-5 text-sm text-muted">
+      <p id={noteId} className="mt-3 text-xs leading-5 text-muted">
+        This sign-up isn&rsquo;t live yet. Your email won&rsquo;t be stored.
+      </p>
+      <p id={statusId} role="status" aria-live="polite" className="mt-2 min-h-5 text-sm text-muted">
         {message}
       </p>
     </form>

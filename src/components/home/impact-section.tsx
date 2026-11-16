@@ -33,15 +33,15 @@ export function ImpactSection() {
       className="scroll-mt-20 py-16 sm:py-24"
     >
       <Container>
-        <div className="overflow-hidden rounded-[2rem] border border-border bg-brand-forest px-6 py-12 text-brand-ivory sm:px-12 sm:py-16">
+        <div className="overflow-hidden rounded-[2rem] border border-brand-sage/20 bg-brand-forest px-6 py-12 text-brand-ivory shadow-[0_28px_80px_-48px_rgba(18,59,45,0.8)] sm:px-12 sm:py-16">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="lg:col-span-5">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-amber">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-brand-amber sm:text-sm">
                 Our approach to impact
               </p>
               <h2
                 id="impact-title"
-                className="text-balance text-3xl font-bold tracking-tight sm:text-4xl"
+                className="text-balance text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-4xl"
               >
                 Impact that can be checked, not just claimed.
               </h2>
@@ -60,8 +60,8 @@ export function ImpactSection() {
                 <li key={title}>
                   <Reveal delay={index * 0.06}>
                     <div className="flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
-                      <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-sage text-brand-forest">
-                        <Icon className="size-5" aria-hidden="true" />
+                      <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-sage text-brand-forest">
+                        <Icon className="size-5" strokeWidth={1.8} aria-hidden="true" />
                       </span>
                       <div>
                         <h3 className="text-lg font-bold tracking-tight">{title}</h3>

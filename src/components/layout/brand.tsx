@@ -6,12 +6,13 @@ export function Brand() {
   return (
     <Link
       href="/"
-      className="inline-flex items-center gap-2 rounded-md font-display text-lg font-bold tracking-tight"
+      aria-label={`${siteConfig.name} home`}
+      className="group inline-flex items-center gap-2.5 rounded-md font-display text-lg font-bold tracking-tight"
     >
-      <span className="inline-flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-        <Leaf className="size-4" aria-hidden="true" />
+      <span className="inline-flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform duration-200 group-hover:rotate-[-8deg]">
+        <Leaf className="size-[1.125rem]" aria-hidden="true" />
       </span>
-      {siteConfig.name}
+      <span>{siteConfig.name}</span>
     </Link>
   );
 }

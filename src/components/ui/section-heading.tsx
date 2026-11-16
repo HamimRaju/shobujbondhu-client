@@ -28,18 +28,18 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? (
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-muted sm:text-sm">
           {eyebrow}
         </p>
       ) : null}
       <Heading
         id={id}
-        className="text-balance text-3xl font-bold tracking-tight sm:text-4xl"
+        className="text-balance text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-4xl lg:text-[2.75rem]"
       >
         {title}
       </Heading>
       {description ? (
-        <p className="mt-4 text-pretty text-base leading-7 text-muted sm:text-lg">
+        <p className="mt-4 max-w-xl text-pretty text-base leading-7 text-muted sm:text-lg sm:leading-8">
           {description}
         </p>
       ) : null}

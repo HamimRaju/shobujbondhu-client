@@ -7,17 +7,17 @@ import { contactEmail, socialLinks } from "@/config/social";
 import { Brand } from "./brand";
 
 const linkClass =
-  "rounded-sm text-sm text-muted transition-colors hover:text-foreground";
+  "inline-flex rounded-sm text-sm text-muted transition-colors hover:translate-x-0.5 hover:text-foreground";
 
 export function Footer() {
   const hasConnect = socialLinks.length > 0 || Boolean(contactEmail);
 
   return (
     <footer className="border-t border-border bg-surface-muted">
-      <Container className="grid gap-10 py-12 lg:grid-cols-12">
+      <Container className="grid gap-10 py-12 sm:py-14 lg:grid-cols-12 lg:gap-14">
         <div className="lg:col-span-5">
           <Brand />
-          <p className="mt-4 max-w-sm text-sm leading-6 text-muted">
+          <p className="mt-5 max-w-sm text-sm leading-6 text-muted">
             {siteConfig.description}
           </p>
           <p lang="bn" className="mt-3 max-w-sm text-sm leading-6 text-muted">
@@ -25,14 +25,14 @@ export function Footer() {
           </p>
 
           {hasConnect ? (
-            <ul className="mt-6 flex flex-wrap gap-2" aria-label="Social and contact links">
+            <ul className="mt-6 flex flex-wrap gap-2.5" aria-label="Social and contact links">
               {socialLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm font-medium transition-colors hover:bg-background"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 py-2 text-sm font-medium transition-colors hover:bg-background"
                   >
                     {link.label}
                     <ExternalLink className="size-3.5" aria-hidden="true" />
@@ -44,7 +44,7 @@ export function Footer() {
                 <li>
                   <a
                     href={`mailto:${contactEmail}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm font-medium transition-colors hover:bg-background"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 py-2 text-sm font-medium transition-colors hover:bg-background"
                   >
                     <Mail className="size-3.5" aria-hidden="true" />
                     Email us
@@ -57,12 +57,14 @@ export function Footer() {
 
         <nav
           aria-label="Footer"
-          className="grid gap-8 sm:grid-cols-3 lg:col-span-7"
+          className="grid gap-8 sm:grid-cols-3 lg:col-span-7 lg:pt-1"
         >
           {footerNav.map((group) => (
             <div key={group.title}>
-              <h2 className="font-display text-sm font-semibold">{group.title}</h2>
-              <ul className="mt-4 space-y-3">
+              <h2 className="font-display text-xs font-bold uppercase tracking-[0.14em] text-foreground">
+                {group.title}
+              </h2>
+              <ul className="mt-4 space-y-3.5">
                 {group.links.map((item) => (
                   <li key={item.label}>
                     <Link href={item.href} className={linkClass}>

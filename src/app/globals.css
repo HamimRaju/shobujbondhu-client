@@ -60,18 +60,31 @@
   --font-display: var(--font-plus-jakarta), var(--font-dm-sans), ui-sans-serif,
     system-ui, sans-serif;
   --font-bengali: var(--font-noto-bengali), var(--font-display);
+  --font-bengali-display: var(--font-noto-serif-bengali), var(--font-bengali);
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
+  min-width: 320px;
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :where(body, body *) {
+    transition-property:
+      background-color, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+  }
 }
 
 h1,

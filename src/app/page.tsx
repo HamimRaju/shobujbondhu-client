@@ -9,8 +9,8 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <EventsPreviewSection />
       <FeaturesSection />
+      <EventsPreviewSection />
       <ImpactSection />
       <GallerySection />
       <NewsletterSection />

@@ -38,11 +38,21 @@ export function NavLinkList({
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "block rounded-full px-4 py-2 text-sm font-medium transition-colors hover:bg-surface-muted",
+                "group relative block rounded-full px-4 py-2.5 text-sm font-medium transition-colors hover:bg-surface-muted focus-visible:outline-offset-2",
+                orientation === "vertical" && "rounded-xl px-4 py-3.5 text-base",
                 active && "bg-surface-muted font-semibold",
               )}
             >
-              {item.label}
+              <span>{item.label}</span>
+              {orientation === "horizontal" ? (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute inset-x-4 -bottom-0.5 h-px origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100",
+                    active && "scale-x-100",
+                  )}
+                />
+              ) : null}
             </Link>
           </li>
         );

@@ -23,19 +23,52 @@ export function GallerySection() {
           {galleryItems.map((item, index) => (
             <li key={item.id}>
               <Reveal delay={(index % 3) * 0.06}>
-                <figure>
+                <figure className="group">
                   <PhotoFrame
                     image={item.image}
                     icon={item.icon}
                     tone={item.tone}
                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
-                    className="aspect-[4/3] w-full rounded-2xl shadow-sm"
+                    className="aspect-[4/3] w-full rounded-2xl border border-border/60 shadow-sm"
                     slotHint={`gallery-${item.id}.jpg`}
                   />
-                  <figcaption className="mt-3 text-sm text-muted">
-                    <span className="font-medium text-foreground">{item.caption}</span>
+                  <figcaption className="mt-3 text-sm leading-6 text-muted">
+                    <span className="font-semibold text-foreground transition-colors group-hover:text-muted">
+                      {item.caption}
+                    </span>
                     {item.image.credit ? (
-                      <span className="block text-xs">{item.image.credit}</span>
+                      <span className="block text-xs">
+                        Photo:{" "}
+                        {item.image.creditUrl ? (
+                          <a
+                            href={item.image.creditUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline decoration-border underline-offset-2 hover:text-foreground"
+                          >
+                            {item.image.credit}
+                          </a>
+                        ) : (
+                          item.image.credit
+                        )}
+                        {item.image.license ? (
+                          <>
+                            {" · "}
+                            {item.image.licenseUrl ? (
+                              <a
+                                href={item.image.licenseUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline decoration-border underline-offset-2 hover:text-foreground"
+                              >
+                                {item.image.license}
+                              </a>
+                            ) : (
+                              item.image.license
+                            )}
+                          </>
+                        ) : null}
+                      </span>
                     ) : null}
                   </figcaption>
                 </figure>

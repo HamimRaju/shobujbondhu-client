@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Noto_Sans_Bengali, Plus_Jakarta_Sans } from "next/font/google";
+import {
+  DM_Sans,
+  Noto_Sans_Bengali,
+  Noto_Serif_Bengali,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 import "./globals.css";
+import { AuthSessionProvider } from "@/components/providers/auth-session-provider";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { ToastProvider } from "@/components/providers/toast-provider";
@@ -21,6 +27,12 @@ const dmSans = DM_Sans({
 
 const notoBengali = Noto_Sans_Bengali({
   variable: "--font-noto-bengali",
+  subsets: ["bengali"],
+  display: "swap",
+});
+
+const notoSerifBengali = Noto_Serif_Bengali({
+  variable: "--font-noto-serif-bengali",
   subsets: ["bengali"],
   display: "swap",
 });
@@ -56,7 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakarta.variable} ${dmSans.variable} ${notoBengali.variable} h-full`}
+      className={`${plusJakarta.variable} ${dmSans.variable} ${notoBengali.variable} ${notoSerifBengali.variable} h-full`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
@@ -68,11 +80,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to main content
         </a>
-        <Navbar />
-        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
-          {children}
-        </main>
-        <Footer />
+        <AuthSessionProvider>
+          <Navbar />
+          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
+          <Footer />
+        </AuthSessionProvider>
         <ToastProvider />
       </body>
     </html>
