@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ArrowDown, Leaf, RefreshCw, Sprout, TreePine, TriangleAlert } from "lucide-react";
+import { ArrowDown, Leaf, Sprout, TreePine, TriangleAlert } from "lucide-react";
 import { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 import { EventsBrowser } from "@/components/events/events-browser";
-import { Button } from "@/components/ui/button";
+import { RetryEventsButton } from "@/components/events/retry-events-button";
 import { Container } from "@/components/ui/container";
 import { getUpcomingCommunityEvents } from "@/lib/events-server";
 
@@ -45,10 +45,7 @@ async function UpcomingEventsResults() {
         <p className="mt-2 max-w-md text-sm leading-6 text-muted">
           {error ?? "Please try again in a moment."}
         </p>
-        <Button href="/events" variant="outline" className="mt-6">
-          <RefreshCw className="size-4" aria-hidden="true" />
-          Try again
-        </Button>
+        <RetryEventsButton />
       </div>
     );
   }
