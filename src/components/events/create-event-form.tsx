@@ -19,7 +19,13 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useRef, useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { Container } from "@/components/ui/container";
-import { authServerURL } from "@/lib/auth-client";
+import {
+  createCommunityEvent,
+  isManagedEventsUnauthorized,
+  ManagedEventsApiError,
+} from "@/lib/managed-events-api";
+import { getEventStartsAt, getTomorrowInBangladesh } from "@/lib/event-datetime";
+import type { ManagedEventCategory } from "@/types/managed-event";
 import { useRouter } from "next/navigation";
 
 const categories = [
@@ -61,11 +67,12 @@ const initialValues: EventFormValues = {
   eventTime: "",
 };
 
-function getTodayUTC() {
-  return new Date().toISOString().slice(0, 10);
+function getFirstAvailableDate() {
+  return getTomorrowInBangladesh();
 }
 
 function isValidImageURL(value: string) {
+  if (value.trim().length > 2048) return false;
   try {
     const url = new URL(value.trim());
     return (
@@ -94,7 +101,9 @@ function validateDate(value: string) {
   ) {
     return "Enter a valid event date.";
   }
-  if (value < getTodayUTC()) return "Event date cannot be in the past.";
+  if (value < getFirstAvailableDate()) {
+    return "Choose an event date in the future.";
+  }
   return undefined;
 }
 
@@ -141,37 +150,25 @@ function validateForm(values: EventFormValues): EventFieldErrors {
     const error = validateField(field, values[field]);
     if (error) errors[field] = error;
   });
+  if (
+    !errors.eventDate &&
+    !errors.eventTime &&
+    getEventStartsAt(values.eventDate, values.eventTime).getTime() <= Date.now()
+  ) {
+    errors.eventTime = "Choose a start time in the future.";
+  }
   return errors;
-}
-
-function getCreatedEventId(payload: unknown): string | null {
-  if (typeof payload !== "object" || payload === null) return null;
-  const data = (payload as { data?: unknown }).data;
-  if (typeof data !== "object" || data === null) return null;
-  const event = (data as { event?: unknown }).event;
-  if (typeof event !== "object" || event === null) return null;
-  const id = (event as { _id?: unknown })._id;
-  return typeof id === "string" && id.trim() ? id : null;
-}
-
-function getApiError(payload: unknown) {
-  if (typeof payload !== "object" || payload === null) return null;
-  const error = (payload as { error?: unknown }).error;
-  if (typeof error !== "object" || error === null) return null;
-  return error as {
-    message?: unknown;
-    details?: unknown;
-  };
 }
 
 function formatDate(value: string) {
   if (!value) return "Your event date";
-  const date = new Date(`${value}T00:00:00`);
+  const date = new Date(`${value}T00:00:00+06:00`);
   return new Intl.DateTimeFormat("en-BD", {
     weekday: "short",
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "Asia/Dhaka",
   }).format(date);
 }
 
@@ -238,89 +235,46 @@ export function CreateEventForm({
       return;
     }
 
-    if (!authServerURL) {
-      const message =
-        "Event services are not configured. Set NEXT_PUBLIC_BETTER_AUTH_URL to your server origin.";
-      setFormError(message);
-      toast.error(message);
-      return;
-    }
-
     submitLock.current = true;
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(new URL("/api/events", authServerURL), {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: values.title.trim(),
-          description: values.description.trim(),
-          category: values.category,
-          imageUrl: values.imageUrl.trim(),
-          location: values.location.trim(),
-          eventDate: values.eventDate,
-          eventTime: values.eventTime,
-        }),
+      await createCommunityEvent({
+        title: values.title.trim(),
+        description: values.description.trim(),
+        category: values.category as ManagedEventCategory,
+        imageUrl: values.imageUrl.trim(),
+        location: values.location.trim(),
+        eventDate: values.eventDate,
+        eventTime: values.eventTime,
       });
-      const payload: unknown = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        const apiError = getApiError(payload);
-        const message =
-          typeof apiError?.message === "string"
-            ? apiError.message
-            : "We couldn’t create your event. Please try again.";
-
-        if (response.status === 401) {
-          toast.error("Your session has expired. Please sign in again.");
-          router.replace(
-            `/login?callbackURL=${encodeURIComponent("/create-event")}`,
-          );
-          return;
-        }
-
-        if (Array.isArray(apiError?.details)) {
-          const serverErrors: EventFieldErrors = {};
-          for (const detail of apiError.details) {
-            if (
-              typeof detail === "object" &&
-              detail !== null &&
-              "path" in detail &&
-              "message" in detail &&
-              typeof detail.path === "string" &&
-              typeof detail.message === "string" &&
-              detail.path in initialValues
-            ) {
-              serverErrors[detail.path as EventField] = detail.message;
-            }
-          }
-          setErrors((current) => ({ ...current, ...serverErrors }));
-        }
-
-        setFormError(message);
-        toast.error(message);
-        return;
-      }
-
-      const eventId = getCreatedEventId(payload);
-      if (!eventId) {
-        const message =
-          "The event was submitted, but its details link could not be confirmed. Please check your events.";
-        setFormError(message);
-        toast.error(message);
-        return;
-      }
 
       toast.success("Your community event has been created.");
-      router.push(`/events/${encodeURIComponent(eventId)}`);
-    } catch {
+      router.push("/events");
+      router.refresh();
+    } catch (error) {
+      if (isManagedEventsUnauthorized(error)) {
+        toast.error("Your session has expired. Please sign in again.");
+        router.replace(
+          `/login?callbackURL=${encodeURIComponent("/create-event")}`,
+        );
+        return;
+      }
+
+      if (error instanceof ManagedEventsApiError && error.details?.length) {
+        const serverErrors: EventFieldErrors = {};
+        for (const detail of error.details) {
+          if (detail.path in initialValues) {
+            serverErrors[detail.path as EventField] = detail.message;
+          }
+        }
+        setErrors((current) => ({ ...current, ...serverErrors }));
+      }
+
       const message =
-        "We couldn’t reach the event service. Check your connection and try again.";
+        error instanceof Error && error.message
+          ? error.message
+          : "We couldn’t create your event. Please try again.";
       setFormError(message);
       toast.error(message);
     } finally {
@@ -623,10 +577,8 @@ export function CreateEventForm({
                           id="eventDate"
                           name="eventDate"
                           type="date"
+                          min={getFirstAvailableDate()}
                           value={values.eventDate}
-                          onFocus={(event) => {
-                            event.currentTarget.min = getTodayUTC();
-                          }}
                           onChange={(event) =>
                             updateField("eventDate", event.target.value)
                           }
@@ -640,7 +592,7 @@ export function CreateEventForm({
                         />
                       </span>
                       <p id="eventDate-hint" className="mt-2 text-xs text-muted">
-                        Choose today or a future date.
+                         Choose a date after today.
                       </p>
                       <FieldError id="eventDate-error">
                         {errors.eventDate}
@@ -722,8 +674,9 @@ export function CreateEventForm({
                   <input
                     id="imageUrl"
                     name="imageUrl"
-                    type="url"
-                    inputMode="url"
+                      type="url"
+                      inputMode="url"
+                      maxLength={2048}
                     value={values.imageUrl}
                     onChange={(event) =>
                       updateField("imageUrl", event.target.value)

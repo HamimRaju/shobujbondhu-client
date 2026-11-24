@@ -34,8 +34,8 @@ import type { ManagedEvent } from "@/types/managed-event";
 function sortSoonestFirst(events: ManagedEvent[]) {
   return [...events].sort((first, second) => {
     const dateDifference =
-      Date.parse(first.eventDate) - Date.parse(second.eventDate);
-    return dateDifference || first.eventTime.localeCompare(second.eventTime);
+      Date.parse(first.startsAt) - Date.parse(second.startsAt);
+    return dateDifference || first.title.localeCompare(second.title);
   });
 }
 

@@ -22,6 +22,7 @@ import {
   validateManagedEventForm,
 } from "@/lib/managed-events-api";
 import { trapDialogFocus } from "@/lib/dialog-focus";
+import { getTomorrowInBangladesh } from "@/lib/event-datetime";
 import { ManagedEventsApiError } from "@/lib/managed-events-api";
 import type {
   ManagedEvent,
@@ -73,7 +74,8 @@ export function EditManagedEventModal({
   const router = useRouter();
   const saveLock = useRef(false);
   const titleRef = useRef<HTMLInputElement>(null);
-  const [values, setValues] = useState(() => toManagedEventFormValues(event));
+  const originalValues = toManagedEventFormValues(event);
+  const [values, setValues] = useState(originalValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -93,7 +95,7 @@ export function EditManagedEventModal({
       const nextValues = { ...values, [field]: value };
       return {
         ...current,
-        [field]: validateManagedEventForm(nextValues)[field],
+        [field]: validateManagedEventForm(nextValues, originalValues)[field],
       };
     });
   }
@@ -101,7 +103,7 @@ export function EditManagedEventModal({
   function handleBlur(field: keyof ManagedEventFormValues) {
     setErrors((current) => ({
       ...current,
-      [field]: validateManagedEventForm(values)[field],
+      [field]: validateManagedEventForm(values, originalValues)[field],
     }));
   }
 
@@ -109,7 +111,7 @@ export function EditManagedEventModal({
     formEvent.preventDefault();
     if (saveLock.current) return;
 
-    const nextErrors = validateManagedEventForm(values);
+    const nextErrors = validateManagedEventForm(values, originalValues);
     setErrors(nextErrors);
     setFormError("");
     if (Object.keys(nextErrors).length > 0) {
@@ -121,12 +123,31 @@ export function EditManagedEventModal({
     saveLock.current = true;
     setIsSaving(true);
     try {
+      const changedFields = Object.fromEntries(
+        Object.entries(values).filter(
+          ([field, value]) =>
+            value !== originalValues[field as keyof ManagedEventFormValues],
+        ),
+      ) as Partial<ManagedEventFormValues>;
+
+      if (Object.keys(changedFields).length === 0) {
+        toast.success("No changes to save.");
+        onClose();
+        return;
+      }
+
       await updateManagedEvent(event._id, {
-        ...values,
-        title: values.title.trim(),
-        description: values.description.trim(),
-        imageUrl: values.imageUrl.trim(),
-        location: values.location.trim(),
+        ...changedFields,
+        ...(changedFields.title ? { title: changedFields.title.trim() } : {}),
+        ...(changedFields.description
+          ? { description: changedFields.description.trim() }
+          : {}),
+        ...(changedFields.imageUrl
+          ? { imageUrl: changedFields.imageUrl.trim() }
+          : {}),
+        ...(changedFields.location
+          ? { location: changedFields.location.trim() }
+          : {}),
       });
       toast.success("Event details updated.");
       onClose();
@@ -382,12 +403,8 @@ export function EditManagedEventModal({
                     <input
                       id="edit-eventDate"
                       type="date"
+                      min={getTomorrowInBangladesh()}
                       value={values.eventDate}
-                      onFocus={(focusEvent) => {
-                        focusEvent.currentTarget.min = new Date()
-                          .toISOString()
-                          .slice(0, 10);
-                      }}
                       onChange={(changeEvent) =>
                         updateField("eventDate", changeEvent.target.value)
                       }
