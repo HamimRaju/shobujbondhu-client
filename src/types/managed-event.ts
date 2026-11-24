@@ -9,8 +9,8 @@ export const managedEventCategories = [
 
 export type ManagedEventCategory = (typeof managedEventCategories)[number];
 
-/** Event shape returned by the backend's eventResponse serializer. */
-export type ManagedEvent = {
+/** Public event fields; never contains owner email or internal user identifiers. */
+export type CommunityEvent = {
   _id: string;
   title: string;
   description: string;
@@ -19,8 +19,15 @@ export type ManagedEvent = {
   location: string;
   /** Serialized MongoDB Date, stored as midnight UTC by the API. */
   eventDate: string;
-  /** Local event time in HH:mm format. */
+  /** Local event time in HH:mm format (Bangladesh time). */
   eventTime: string;
+  /** Absolute ISO start instant derived from eventDate and eventTime. */
+  startsAt: string;
+  isUpcoming: boolean;
+};
+
+/** Private event shape returned by the authenticated owner endpoint. */
+export type ManagedEvent = CommunityEvent & {
   createdBy: string;
   createdById?: string;
   createdAt: string;
@@ -35,4 +42,9 @@ export type ManagedEventFormValues = {
   location: string;
   eventDate: string;
   eventTime: string;
+};
+
+export type JoinedCommunityEvent = {
+  joinedAt: string;
+  event: Omit<CommunityEvent, "isUpcoming">;
 };

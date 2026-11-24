@@ -1,12 +1,15 @@
-import { ArrowRight, CalendarDays, Info } from "lucide-react";
+import { ArrowRight, CalendarDays, TriangleAlert } from "lucide-react";
 import { EventCard } from "@/components/events/event-card";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { previewEvents } from "@/data/preview-events";
+import { getUpcomingCommunityEvents } from "@/lib/events-server";
 
-export function EventsPreviewSection() {
+export async function EventsPreviewSection() {
+  // The API applies MongoDB .limit(6) for this recent upcoming-events preview.
+  const { data: events, error } = await getUpcomingCommunityEvents(6);
+
   return (
     <section
       id="upcoming-events"
@@ -19,7 +22,7 @@ export function EventsPreviewSection() {
             id="events-title"
             eyebrow="Upcoming events"
             title="Find something to join near you"
-            description="A preview of how volunteering events will appear across Bangladesh."
+            description="The latest community-led opportunities across Bangladesh, starting soon."
           />
           <Button href="/events" variant="outline" className="self-start sm:self-auto">
             View all events
@@ -27,22 +30,29 @@ export function EventsPreviewSection() {
           </Button>
         </div>
 
-        <p
-          role="note"
-          className="mt-6 flex items-start gap-2 rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm text-muted"
-        >
-          <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          <span>
-            <strong className="font-semibold text-foreground">Preview data.</strong>{" "}
-            These sample events show the planned layout. They are not real,
-            registered events.
-          </span>
-        </p>
-
-        {previewEvents.length > 0 ? (
+        {error ? (
+          <div
+            role="status"
+            className="mt-8 flex flex-col items-start gap-4 rounded-3xl border border-amber-500/30 bg-surface px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-7"
+          >
+            <div className="flex items-start gap-3">
+              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-200">
+                <TriangleAlert className="size-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-semibold">Events are taking a moment to load</h3>
+                <p className="mt-1 text-sm leading-6 text-muted">{error}</p>
+              </div>
+            </div>
+            <Button href="/events" variant="outline" className="shrink-0">
+              Browse events
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Button>
+          </div>
+        ) : events && events.length > 0 ? (
           <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {previewEvents.map((event, index) => (
-              <li key={event.id}>
+            {events.map((event, index) => (
+              <li key={event._id}>
                 <Reveal className="h-full" delay={(index % 3) * 0.06}>
                   <EventCard event={event} />
                 </Reveal>
@@ -56,14 +66,14 @@ export function EventsPreviewSection() {
                 <CalendarDays className="size-5" aria-hidden="true" />
               </span>
               <div>
-                <h3 className="font-semibold">No events to preview yet</h3>
+                <h3 className="font-semibold">No upcoming events yet</h3>
                 <p className="mt-1 text-sm leading-6 text-muted">
-                  Browse upcoming opportunities and find a way to take part.
+                  Be the first to bring your neighbourhood together.
                 </p>
               </div>
             </div>
-            <Button href="/events" variant="outline" className="shrink-0">
-              Explore events
+            <Button href="/create-event" className="shrink-0">
+              Create an event
               <ArrowRight className="size-4" aria-hidden="true" />
             </Button>
           </div>
