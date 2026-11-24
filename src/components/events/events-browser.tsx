@@ -5,21 +5,18 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, Search, SlidersHorizontal, X } from "lucide-react";
 import { UpcomingEventCard } from "@/components/events/upcoming-event-card";
 import { Button } from "@/components/ui/button";
-import { eventCategoryOptions } from "@/config/upcoming-event-categories";
-import type {
-  UpcomingEvent,
-  UpcomingEventCategory,
-} from "@/types/upcoming-event";
+import { communityEventCategoryOptions } from "@/config/community-event-categories";
+import type { CommunityEvent, ManagedEventCategory } from "@/types/managed-event";
 
 type SortOrder = "soonest" | "latest";
 
 type EventsBrowserProps = {
-  events: UpcomingEvent[];
+  events: CommunityEvent[];
 };
 
 export function EventsBrowser({ events }: EventsBrowserProps) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<"all" | UpcomingEventCategory>("all");
+  const [category, setCategory] = useState<"all" | ManagedEventCategory>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("soonest");
   const reduceMotion = useReducedMotion();
 
@@ -31,7 +28,7 @@ export function EventsBrowser({ events }: EventsBrowserProps) {
         const matchesCategory = category === "all" || event.category === category;
         const matchesQuery =
           normalizedQuery.length === 0 ||
-          `${event.title} ${event.area} ${event.city}`
+          `${event.title} ${event.location} ${event.category}`
             .toLocaleLowerCase()
             .includes(normalizedQuery);
 
@@ -39,7 +36,7 @@ export function EventsBrowser({ events }: EventsBrowserProps) {
       })
       .sort((first, second) => {
         const difference =
-          new Date(first.startsAt).getTime() - new Date(second.startsAt).getTime();
+          Date.parse(first.startsAt) - Date.parse(second.startsAt);
         return sortOrder === "soonest" ? difference : -difference;
       });
   }, [category, events, query, sortOrder]);
@@ -113,7 +110,7 @@ export function EventsBrowser({ events }: EventsBrowserProps) {
             aria-label="Filter events by category"
             className="flex flex-wrap gap-2"
           >
-            {eventCategoryOptions.map((option) => {
+            {communityEventCategoryOptions.map((option) => {
               const selected = category === option.value;
 
               return (
@@ -160,7 +157,7 @@ export function EventsBrowser({ events }: EventsBrowserProps) {
           <AnimatePresence initial={false} mode="popLayout">
             {filteredEvents.map((event, index) => (
               <motion.li
-                key={event.id}
+                key={event._id}
                 layout={!reduceMotion}
                 initial={reduceMotion ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}

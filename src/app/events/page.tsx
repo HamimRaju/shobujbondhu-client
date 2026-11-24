@@ -1,14 +1,60 @@
 import type { Metadata } from "next";
-import { ArrowDown, Leaf, Sprout, TreePine } from "lucide-react";
+import { Suspense } from "react";
+import { ArrowDown, Leaf, RefreshCw, Sprout, TreePine, TriangleAlert } from "lucide-react";
+import { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 import { EventsBrowser } from "@/components/events/events-browser";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { upcomingEvents } from "@/data/upcoming-events";
+import { getUpcomingCommunityEvents } from "@/lib/events-server";
 
 export const metadata: Metadata = {
   title: "Upcoming Events",
   description:
-    "Explore sample community volunteering events across Bangladesh, from tree planting and clean-ups to local donation drives.",
+    "Explore upcoming community volunteering events across Bangladesh, from tree planting and clean-ups to local donation drives.",
 };
+
+function UpcomingEventsFallback() {
+  return (
+    <div role="status" aria-label="Loading upcoming events">
+      <span className="sr-only">Loading upcoming events</span>
+      <div className="h-40 animate-pulse rounded-3xl border border-border bg-surface" />
+      <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+        {Array.from({ length: 6 }, (_, index) => (
+          <li key={index}>
+            <EventCardSkeleton />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+async function UpcomingEventsResults() {
+  const { data: events, error } = await getUpcomingCommunityEvents();
+
+  if (error || !events) {
+    return (
+      <div
+        role="status"
+        className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-amber-500/30 bg-surface px-6 py-12 text-center"
+      >
+        <span className="inline-flex size-14 items-center justify-center rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-200">
+          <TriangleAlert className="size-6" aria-hidden="true" />
+        </span>
+        <h2 className="mt-5 text-xl font-bold">Events are temporarily unavailable</h2>
+        <p className="mt-2 max-w-md text-sm leading-6 text-muted">
+          {error ?? "Please try again in a moment."}
+        </p>
+        <Button href="/events" variant="outline" className="mt-6">
+          <RefreshCw className="size-4" aria-hidden="true" />
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  return <EventsBrowser events={events} />;
+}
 
 export default function EventsPage() {
   return (
@@ -43,7 +89,7 @@ export default function EventsPage() {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-pretty text-base leading-7 text-brand-ivory/75 sm:text-lg sm:leading-8">
-              Find a small way to show up for your community. Explore sample
+              Find a small way to show up for your community. Explore real
               volunteer opportunities from neighbourhoods across Bangladesh.
             </p>
             <a
@@ -117,13 +163,14 @@ export default function EventsPage() {
               </p>
             </div>
             <p className="max-w-md rounded-xl border border-border bg-surface-muted px-4 py-3 text-xs leading-5 text-muted sm:text-sm">
-              <span className="font-semibold text-foreground">Preview listings.</span>{" "}
-              These fictional examples are for layout preview only; registration
-              is not available yet.
+              Only events with a future date and time appear here. Join an
+              event to save it to your personal list.
             </p>
           </div>
 
-          <EventsBrowser events={upcomingEvents} />
+          <Suspense fallback={<UpcomingEventsFallback />}>
+            <UpcomingEventsResults />
+          </Suspense>
         </Container>
       </section>
     </>
