@@ -20,7 +20,12 @@ type RegistrationErrors = {
 function isValidImageURL(value: string) {
   try {
     const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      Boolean(url.hostname) &&
+      !url.username &&
+      !url.password
+    );
   } catch {
     return false;
   }
@@ -50,6 +55,9 @@ export function RegisterPageContent() {
     const normalizedImage = image.trim();
 
     if (!name.trim()) nextErrors.name = "Enter your full name.";
+    else if (name.trim().length > 120) {
+      nextErrors.name = "Your name must be 120 characters or fewer.";
+    }
     if (!normalizedEmail) {
       nextErrors.email = "Enter your email address.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
@@ -58,6 +66,8 @@ export function RegisterPageContent() {
 
     if (password.length < 6) {
       nextErrors.password = "Use at least 6 characters.";
+    } else if (password.length > 128) {
+      nextErrors.password = "Use 128 characters or fewer.";
     } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
       nextErrors.password =
         "Include at least one uppercase and one lowercase letter.";
@@ -69,8 +79,10 @@ export function RegisterPageContent() {
       nextErrors.confirmPassword = "The passwords don’t match.";
     }
 
-    if (normalizedImage && !isValidImageURL(normalizedImage)) {
-      nextErrors.image = "Use a valid image URL beginning with http:// or https://.";
+    if (normalizedImage && normalizedImage.length > 2048) {
+      nextErrors.image = "Keep the profile image URL under 2,048 characters.";
+    } else if (normalizedImage && !isValidImageURL(normalizedImage)) {
+      nextErrors.image = "Use a valid public image URL with HTTP or HTTPS.";
     }
 
     setErrors(nextErrors);
@@ -132,7 +144,7 @@ export function RegisterPageContent() {
       description="Join neighbours who are bringing people together around local action."
       footerPrompt="Already have an account?"
       footerLabel="Sign in"
-      footerHref="/login"
+      footerHref={`/login?callbackURL=${encodeURIComponent(returnTo)}`}
     >
       <form
         onSubmit={handleSubmit}

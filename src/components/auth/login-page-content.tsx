@@ -94,7 +94,7 @@ export function LoginPageContent() {
       description="Sign in to find local events and keep up with the work happening around you."
       footerPrompt="New to ShobujBondhu?"
       footerLabel="Create an account"
-      footerHref="/register"
+      footerHref={`/register?callbackURL=${encodeURIComponent(returnTo)}`}
     >
       <form
         onSubmit={handleSubmit}
