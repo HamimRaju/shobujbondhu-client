@@ -26,7 +26,8 @@
 
 </div>
 
-> **Live site:** Deployment is pending production API and database configuration.
+> **Live site:** [shobujbondhu-client.vercel.app](https://shobujbondhu-client.vercel.app)<br />
+> **API health:** [shobujbondhu-server.vercel.app/api/health](https://shobujbondhu-server.vercel.app/api/health)
 
 ---
 
@@ -148,6 +149,6 @@ npx tsx --test src/tests/event.validator.test.ts
 
 ## ☁️ Deployment
 
-Deploy the Express API to a Node.js host and the Next.js client to Vercel. Configure the production MongoDB URI, a new authentication secret, and matching production origins for `BETTER_AUTH_URL`, `CLIENT_URL`, and `NEXT_PUBLIC_BETTER_AUTH_URL`. Set `NEXT_PUBLIC_SITE_URL` to the client URL. Use HTTPS and update the Google OAuth callback/origins if OAuth is enabled.
+The Express API and Next.js client are deployed on Vercel. Production uses the same variables listed in the `.env.example` files, with the client origin `https://shobujbondhu-client.vercel.app` and API origin `https://shobujbondhu-server.vercel.app`. Keep `BETTER_AUTH_URL`, `CLIENT_URL`, `CORS_ORIGINS`, `NEXT_PUBLIC_BETTER_AUTH_URL`, and `NEXT_PUBLIC_SITE_URL` aligned when changing domains.
 
-Add the production link here once the API and client are deployed.
+For Google OAuth, authorize `https://shobujbondhu-client.vercel.app` and the callback `https://shobujbondhu-server.vercel.app/api/auth/callback/google` in Google Cloud Console.
