@@ -1,17 +1,16 @@
 import type { NavItem } from "@/types";
 
-// Routes other than "/" belong to later phases and will 404 until built.
 export const primaryNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Upcoming Events", href: "/events" },
-  { label: "About", href: "/about" },
+  { label: "Our impact", href: "/#impact" },
 ];
 
 export const loginLink: NavItem = { label: "Login", href: "/login" };
 
 export const startInitiativeLink: NavItem = {
-  label: "Start an Initiative",
-  href: "/start-initiative",
+  label: "Create an Event",
+  href: "/create-event",
 };
 
 export const footerNav: { title: string; links: NavItem[] }[] = [
@@ -20,7 +19,7 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
     links: [
       { label: "Home", href: "/" },
       { label: "Upcoming Events", href: "/events" },
-      { label: "About", href: "/about" },
+      { label: "Our impact", href: "/#impact" },
     ],
   },
   {
