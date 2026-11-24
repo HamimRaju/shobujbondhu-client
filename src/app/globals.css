@@ -63,45 +63,52 @@
   --font-bengali-display: var(--font-noto-serif-bengali), var(--font-bengali);
 }
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
 
-body {
-  min-width: 320px;
-  overflow-x: clip;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  body {
+    min-width: 320px;
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-@media (prefers-reduced-motion: no-preference) {
-  :where(body, body *) {
-    transition-property:
-      background-color, border-color, color, fill, stroke, box-shadow;
-    transition-duration: 160ms;
-    transition-timing-function: ease-out;
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  /* Bengali copy gets a dedicated font; component utilities can override it. */
+  :where(:lang(bn)) {
+    font-family: var(--font-bengali);
+    line-height: 1.6;
   }
 }
 
-h1,
-h2,
-h3,
-h4 {
-  font-family: var(--font-display);
-}
-
-:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-::selection {
-  background: var(--accent);
-  color: var(--accent-foreground);
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition:
+      background-color 160ms ease-out,
+      color 160ms ease-out;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -115,10 +122,4 @@ h4 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Bengali text: dedicated font and roomier line height (zero specificity so utilities still win). */
-:where(:lang(bn)) {
-  font-family: var(--font-bengali);
-  line-height: 1.6;
 }
