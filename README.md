@@ -4,74 +4,92 @@
 
 ### Neighbours together. Communities stronger.
 
-**A community-service events platform built for local action across Bangladesh.**
+**A community-service events platform for local action across Bangladesh.**
 
-<br />
+<p>
+  <a href="https://shobujbondhu-client.vercel.app">
+    <img src="https://img.shields.io/badge/Visit%20the%20live%20site-1F6A4B?style=for-the-badge&logo=vercel&logoColor=white" alt="Visit the live ShobujBondhu site" />
+  </a>
+</p>
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Express](https://img.shields.io/badge/API-Express-111111?logo=express)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+<p>
+  <a href="https://github.com/HamimRaju/shobujbondhu-client">Client repository</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/HamimRaju/shobujbondhu-server">API repository</a>
+  &nbsp;·&nbsp;
+  <a href="https://shobujbondhu-server.vercel.app/api/health">API health</a>
+</p>
 
-<br />
+<p>
+  <img src="public/images/home/hero-planting.jpg" alt="Neighbours planting trees together" width="100%" />
+</p>
 
-[Explore events](#what-you-can-do) ·
-[Run locally](#get-started) ·
-[Client repository](https://github.com/HamimRaju/shobujbondhu-client) ·
-[Server repository](https://github.com/HamimRaju/shobujbondhu-server)
-
-<br />
-
-![A community planting trees together](public/images/home/hero-planting.jpg)
+<p>
+  <img src="https://img.shields.io/badge/Next.js-16-111111?logo=next.js" alt="Next.js 16" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Express-API-111111?logo=express" alt="Express API" />
+  <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB" />
+</p>
 
 </div>
 
-> **Live site:** [shobujbondhu-client.vercel.app](https://shobujbondhu-client.vercel.app)<br />
-> **API health:** [shobujbondhu-server.vercel.app/api/health](https://shobujbondhu-server.vercel.app/api/health)
-
 ---
 
-## 🌱 What you can do
-<a id="what-you-can-do"></a>
+## A little action, close to home
 
-| Discover | Take part | Organize |
+ShobujBondhu helps neighbours find and organize community-service events, from clean-ups and tree planting to food and winter donations.
+
+| 🔎 Discover | 🤝 Participate | 🌱 Organize |
 | --- | --- | --- |
-| Browse future community events by type, title, or place. | Join an event and see how many neighbours are coming. | Create an event with a photo, location, category, and date. |
-| View event details without an account. | Keep joined opportunities in your private dashboard. | Update or delete only the events you created. |
+| Search upcoming events by location and category. | View details, join events, and keep your joined plans together. | Create, update, and manage your own community events. |
 
-### Made for real community work
-
-- Email/password sign-in and registration, with optional Google OAuth.
-- Profile view and update, plus a persistent light/dark theme.
-- Bangladesh-local date and time validation; past events are excluded from upcoming listings.
-- Responsive event cards, search and filters, clear empty states, and loading skeletons.
-- Public event responses omit private creator information; protected event operations verify JWTs and active sessions.
-
-## 🖼️ A glimpse of the community
+## Community in focus
 
 <table>
   <tr>
-    <td width="50%">
-      <img src="public/images/home/gallery-neighborhood-planting.jpg" alt="Neighbours planting trees together" />
+    <td width="33%">
+      <img src="public/images/home/gallery-neighborhood-planting.jpg" alt="Neighbours planting a tree" />
       <p align="center"><strong>Greener neighbourhoods</strong></p>
     </td>
-    <td width="50%">
+    <td width="33%">
       <img src="public/images/home/gallery-river-cleanup.jpg" alt="Volunteers cleaning a riverbank" />
       <p align="center"><strong>Cleaner shared spaces</strong></p>
+    </td>
+    <td width="33%">
+      <img src="public/images/home/gallery-coastline.jpg" alt="Volunteers caring for a coastline" />
+      <p align="center"><strong>Care for our coastline</strong></p>
     </td>
   </tr>
 </table>
 
-## 🧰 Built with
+## Platform highlights
 
-**Web:** Next.js App Router · React · TypeScript · Tailwind CSS<br />
-**Authentication:** Better Auth · email/password · optional Google OAuth · JWT<br />
-**API & data:** Express · MongoDB · Zod · Helmet
+- Email/password authentication and optional Google sign-in.
+- MongoDB-backed events: the home page shows the six soonest upcoming opportunities.
+- Bangladesh-local event scheduling; past dates and times are rejected.
+- JWT-protected event creation, joining, owner-only updates, and deletion.
+- Personal joined-events dashboard, participant counts, and profile editing.
+- Light/dark theme, responsive layouts, loading skeletons, search, and category filters.
+- Public event APIs omit private creator identifiers; private API requests verify a JWT and its matching session.
 
-## 🚀 Get started
-<a id="get-started"></a>
+## Built with
 
-The client and API are separate packages with separate lockfiles. Run each command from its package directory.
+<p>
+  <strong>Web</strong><br />
+  Next.js App Router · React · TypeScript · Tailwind CSS
+</p>
+<p>
+  <strong>Authentication</strong><br />
+  Better Auth · Email/password · Google OAuth · JWT
+</p>
+<p>
+  <strong>API and data</strong><br />
+  Express · MongoDB · Zod · Helmet
+</p>
+
+## Get started
+
+The client and API are separate packages with their own lockfiles. Run commands from the indicated directory.
 
 ### 1. Install dependencies
 
@@ -87,45 +105,45 @@ cd shobujbondhu-server
 cp .env.example .env
 ```
 
-Set `MONGODB_URI`, `DB_NAME`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. For local development use:
+Set `MONGODB_URI`, `DB_NAME`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. For local development:
 
 ```dotenv
 BETTER_AUTH_URL=http://localhost:5000
 CLIENT_URL=http://localhost:3000
 ```
 
-Google sign-in is optional. To enable it, set both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; register this callback with Google:
+Google sign-in is optional. Set both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` and allow this callback:
 
 ```text
 http://localhost:5000/api/auth/callback/google
 ```
 
-### 3. Configure the web app
+### 3. Configure the client
 
 ```bash
 cd ../shobujbondhu-client
 cp .env.example .env.local
 ```
 
-Use `NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:5000` and `NEXT_PUBLIC_SITE_URL=http://localhost:3000`.
+Set `NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:5000` and `NEXT_PUBLIC_SITE_URL=http://localhost:3000`.
 
-### 4. Start both services
+### 4. Start the two services
 
-In separate terminals:
+Run each command in a separate terminal:
 
 ```bash
-# Terminal 1 — from shobujbondhu-server
+# shobujbondhu-server
 npm run dev
 ```
 
 ```bash
-# Terminal 2 — from shobujbondhu-client
+# shobujbondhu-client
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The API listens on port `5000`.
 
-## ✅ Verify changes
+## Checks
 
 ```bash
 # Client
@@ -140,15 +158,17 @@ npm test
 npm run build
 ```
 
-Run the event validator tests alone with:
+Run only the server event-validator tests with:
 
 ```bash
 cd shobujbondhu-server
 npx tsx --test src/tests/event.validator.test.ts
 ```
 
-## ☁️ Deployment
+## Production setup
 
-The Express API and Next.js client are deployed on Vercel. Production uses the same variables listed in the `.env.example` files, with the client origin `https://shobujbondhu-client.vercel.app` and API origin `https://shobujbondhu-server.vercel.app`. Keep `BETTER_AUTH_URL`, `CLIENT_URL`, `CORS_ORIGINS`, `NEXT_PUBLIC_BETTER_AUTH_URL`, and `NEXT_PUBLIC_SITE_URL` aligned when changing domains.
+The [client](https://shobujbondhu-client.vercel.app) and [Express API](https://shobujbondhu-server.vercel.app) are deployed on Vercel. Keep `BETTER_AUTH_URL`, `CLIENT_URL`, `CORS_ORIGINS`, `NEXT_PUBLIC_BETTER_AUTH_URL`, and `NEXT_PUBLIC_SITE_URL` aligned with the deployed origins. Use HTTPS and set the Google Cloud authorized callback to:
 
-For Google OAuth, authorize `https://shobujbondhu-client.vercel.app` and the callback `https://shobujbondhu-server.vercel.app/api/auth/callback/google` in Google Cloud Console.
+```text
+https://shobujbondhu-server.vercel.app/api/auth/callback/google
+```
