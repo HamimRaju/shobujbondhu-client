@@ -1,6 +1,11 @@
 import { authClient, authServerURL } from "@/lib/auth-client";
 import {
+  getEventStartsAt,
+  getTomorrowInBangladesh,
+} from "@/lib/event-datetime";
+import {
   managedEventCategories,
+  type JoinedCommunityEvent,
   type ManagedEvent,
   type ManagedEventFormValues,
 } from "@/types/managed-event";
@@ -50,6 +55,9 @@ function parseEvent(value: unknown): ManagedEvent {
     !Number.isFinite(Date.parse(value.eventDate)) ||
     typeof value.eventTime !== "string" ||
     !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value.eventTime) ||
+    typeof value.startsAt !== "string" ||
+    !Number.isFinite(Date.parse(value.startsAt)) ||
+    typeof value.isUpcoming !== "boolean" ||
     typeof value.createdBy !== "string" ||
     (value.createdById !== undefined &&
       typeof value.createdById !== "string") ||
@@ -72,6 +80,8 @@ function parseEvent(value: unknown): ManagedEvent {
     location: value.location,
     eventDate: value.eventDate,
     eventTime: value.eventTime,
+    startsAt: value.startsAt,
+    isUpcoming: value.isUpcoming,
     createdBy: value.createdBy,
     ...(typeof value.createdById === "string"
       ? { createdById: value.createdById }
@@ -199,9 +209,138 @@ export async function getMyManagedEvents(): Promise<ManagedEvent[]> {
   return payload.data.events.map(parseEvent);
 }
 
+function parseJoinedEvent(value: unknown): JoinedCommunityEvent {
+  if (!isRecord(value) || !isRecord(value.event)) {
+    throw new ManagedEventsApiError(
+      "The event service returned an unexpected joined event.",
+      200,
+      "INVALID_JOINED_EVENT_RESPONSE",
+    );
+  }
+
+  const event = value.event;
+  if (
+    typeof event._id !== "string" ||
+    !/^[a-f\d]{24}$/i.test(event._id) ||
+    typeof event.title !== "string" ||
+    typeof event.description !== "string" ||
+    typeof event.category !== "string" ||
+    !managedEventCategories.includes(event.category as ManagedEvent["category"]) ||
+    typeof event.imageUrl !== "string" ||
+    typeof event.location !== "string" ||
+    typeof event.eventDate !== "string" ||
+    !Number.isFinite(Date.parse(event.eventDate)) ||
+    typeof event.eventTime !== "string" ||
+    !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(event.eventTime) ||
+    typeof event.startsAt !== "string" ||
+    !Number.isFinite(Date.parse(event.startsAt)) ||
+    typeof value.joinedAt !== "string" ||
+    !Number.isFinite(Date.parse(value.joinedAt))
+  ) {
+    throw new ManagedEventsApiError(
+      "The event service returned an unexpected joined event.",
+      200,
+      "INVALID_JOINED_EVENT_RESPONSE",
+    );
+  }
+
+  return {
+    joinedAt: value.joinedAt,
+    event: {
+      _id: event._id,
+      title: event.title,
+      description: event.description,
+      category: event.category as ManagedEvent["category"],
+      imageUrl: event.imageUrl,
+      location: event.location,
+      eventDate: event.eventDate,
+      eventTime: event.eventTime,
+      startsAt: event.startsAt,
+    },
+  };
+}
+
+export async function createCommunityEvent(
+  values: ManagedEventFormValues,
+): Promise<ManagedEvent> {
+  const payload = await requestEventApi("/api/events", {
+    method: "POST",
+    body: JSON.stringify(values),
+  });
+  if (!isRecord(payload) || !isRecord(payload.data) || !("event" in payload.data)) {
+    throw new ManagedEventsApiError(
+      "The event service returned an unexpected response.",
+      200,
+      "INVALID_CREATE_RESPONSE",
+    );
+  }
+  return parseEvent(payload.data.event);
+}
+
+export async function getJoinedCommunityEvents(): Promise<JoinedCommunityEvent[]> {
+  const payload = await requestEventApi("/api/joined-events");
+  if (
+    !isRecord(payload) ||
+    !isRecord(payload.data) ||
+    !Array.isArray(payload.data.joinedEvents)
+  ) {
+    throw new ManagedEventsApiError(
+      "The event service returned an unexpected joined events list.",
+      200,
+      "INVALID_JOINED_EVENTS_RESPONSE",
+    );
+  }
+  return payload.data.joinedEvents.map(parseJoinedEvent);
+}
+
+export type EventParticipation = {
+  joined: boolean;
+  participantCount: number;
+  isUpcoming: boolean;
+};
+
+export async function getEventParticipation(
+  id: string,
+): Promise<EventParticipation> {
+  const payload = await requestEventApi(
+    `/api/events/${encodeURIComponent(id)}/participation`,
+  );
+  const participation =
+    isRecord(payload) && isRecord(payload.data) && isRecord(payload.data.participation)
+      ? payload.data.participation
+      : null;
+
+  if (
+    !participation ||
+    typeof participation.joined !== "boolean" ||
+    typeof participation.participantCount !== "number" ||
+    !Number.isInteger(participation.participantCount) ||
+    participation.participantCount < 0 ||
+    typeof participation.isUpcoming !== "boolean"
+  ) {
+    throw new ManagedEventsApiError(
+      "The event service returned unexpected participation details.",
+      200,
+      "INVALID_PARTICIPATION_RESPONSE",
+    );
+  }
+
+  return {
+    joined: participation.joined,
+    participantCount: participation.participantCount,
+    isUpcoming: participation.isUpcoming,
+  };
+}
+
+export async function joinCommunityEvent(id: string): Promise<void> {
+  await requestEventApi(`/api/events/${encodeURIComponent(id)}/join`, {
+    method: "POST",
+  });
+}
+
 export async function updateManagedEvent(
   id: string,
-  values: ManagedEventFormValues,
+  values: Partial<ManagedEventFormValues>,
 ): Promise<ManagedEvent> {
   const payload = await requestEventApi(
     `/api/events/${encodeURIComponent(id)}`,
@@ -253,6 +392,7 @@ export function getManagedEventsErrorMessage(
 }
 
 export function isValidManagedEventImageURL(value: string) {
+  if (value.trim().length > 2048) return false;
   try {
     const url = new URL(value.trim());
     return (
@@ -268,6 +408,7 @@ export function isValidManagedEventImageURL(value: string) {
 
 export function validateManagedEventForm(
   values: ManagedEventFormValues,
+  original?: ManagedEventFormValues,
 ) {
   const errors: Partial<Record<keyof ManagedEventFormValues, string>> = {};
 
@@ -311,8 +452,11 @@ export function validateManagedEventForm(
       parsed.getUTCDate() !== day
     ) {
       errors.eventDate = "Enter a valid event date.";
-    } else if (values.eventDate < new Date().toISOString().slice(0, 10)) {
-      errors.eventDate = "Event date cannot be in the past.";
+    } else if (
+      values.eventDate < getTomorrowInBangladesh() &&
+      values.eventDate !== original?.eventDate
+    ) {
+      errors.eventDate = "Choose an event date in the future.";
     }
   }
 
@@ -320,6 +464,16 @@ export function validateManagedEventForm(
     errors.eventTime = "Choose an event time.";
   } else if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(values.eventTime)) {
     errors.eventTime = "Enter a valid event time.";
+  }
+
+  if (
+    !errors.eventDate &&
+    !errors.eventTime &&
+    (values.eventDate !== original?.eventDate ||
+      values.eventTime !== original?.eventTime) &&
+    getEventStartsAt(values.eventDate, values.eventTime).getTime() <= Date.now()
+  ) {
+    errors.eventTime = "Choose a start time in the future.";
   }
 
   return errors;
