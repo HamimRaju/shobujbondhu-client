@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { JoinedEventsDashboard } from "@/components/events/joined-events-dashboard";
 import { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 import { Container } from "@/components/ui/container";
-import { requireAuthenticatedSession } from "@/lib/auth-session-server";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 export const metadata: Metadata = {
   title: "Joined events",
@@ -36,15 +35,13 @@ function JoinedEventsLoading() {
   );
 }
 
-async function ProtectedJoinedEvents() {
-  await requireAuthenticatedSession("/joined-events");
-  return <JoinedEventsDashboard />;
-}
-
 export default function JoinedEventsPage() {
   return (
-    <Suspense fallback={<JoinedEventsLoading />}>
-      <ProtectedJoinedEvents />
-    </Suspense>
+    <ProtectedRoute
+      returnTo="/joined-events"
+      fallback={<JoinedEventsLoading />}
+    >
+      <JoinedEventsDashboard />
+    </ProtectedRoute>
   );
 }

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { ProfilePageContent } from "@/components/auth/profile-page-content";
 import { ProtectedPageSkeleton } from "@/components/ui/protected-page-skeleton";
-import { requireAuthenticatedSession } from "@/lib/auth-session-server";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 export const metadata: Metadata = {
   title: "Your profile",
@@ -11,15 +10,11 @@ export const metadata: Metadata = {
 
 export default function ProfilePage() {
   return (
-    <Suspense
+    <ProtectedRoute
+      returnTo="/profile"
       fallback={<ProtectedPageSkeleton variant="profile" />}
     >
-      <ProtectedProfilePage />
-    </Suspense>
+      <ProfilePageContent />
+    </ProtectedRoute>
   );
-}
-
-async function ProtectedProfilePage() {
-  await requireAuthenticatedSession("/profile");
-  return <ProfilePageContent />;
 }

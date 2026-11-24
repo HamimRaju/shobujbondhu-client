@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { ManageEventsDashboard } from "@/components/events/manage-events-dashboard";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 import { ProtectedPageSkeleton } from "@/components/ui/protected-page-skeleton";
-import { requireAuthenticatedSession } from "@/lib/auth-session-server";
 
 export const metadata: Metadata = {
   title: "Manage events",
@@ -12,15 +11,11 @@ export const metadata: Metadata = {
 
 export default function ManageEventsPage() {
   return (
-    <Suspense
+    <ProtectedRoute
+      returnTo="/manage-events"
       fallback={<ProtectedPageSkeleton variant="manage-events" />}
     >
-      <ProtectedManageEventsPage />
-    </Suspense>
+      <ManageEventsDashboard />
+    </ProtectedRoute>
   );
-}
-
-async function ProtectedManageEventsPage() {
-  await requireAuthenticatedSession("/manage-events");
-  return <ManageEventsDashboard />;
 }
