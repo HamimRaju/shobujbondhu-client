@@ -1,9 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, LogOut, UserRound } from "lucide-react";
+import {
+  CalendarCheck2,
+  CalendarDays,
+  CalendarPlus,
+  ChevronDown,
+  LogOut,
+  UserRound,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthAvatar } from "@/components/auth/user-avatar";
 import type { AuthenticatedUser } from "@/components/providers/auth-session-provider";
@@ -20,7 +26,6 @@ export function UserMenu({
   compact = false,
   onNavigate,
 }: UserMenuProps) {
-  const router = useRouter();
   const menuId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -68,8 +73,9 @@ export function UserMenu({
       setOpen(false);
       toast.success("You have been signed out.");
       onNavigate?.();
-      router.replace("/");
-      router.refresh();
+      // Force a fresh document so Cache Components cannot restore private UI
+      // state for the signed-out user from the browser's route cache.
+      window.location.replace("/");
     } catch (error) {
       toast.error(
         getAuthErrorMessage(error, "We couldn’t sign you out. Try again."),
@@ -101,12 +107,28 @@ export function UserMenu({
             Profile
           </Link>
           <Link
+            href="/create-event"
+            onClick={onNavigate}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-surface-muted px-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
+          >
+            <CalendarPlus className="size-4" aria-hidden="true" />
+            Create event
+          </Link>
+          <Link
             href="/manage-events"
             onClick={onNavigate}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-surface-muted px-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
           >
             <CalendarDays className="size-4" aria-hidden="true" />
             Manage events
+          </Link>
+          <Link
+            href="/joined-events"
+            onClick={onNavigate}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-surface-muted px-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
+          >
+            <CalendarCheck2 className="size-4" aria-hidden="true" />
+            Joined events
           </Link>
           <button
             type="button"
@@ -131,6 +153,7 @@ export function UserMenu({
         aria-expanded={open}
         aria-controls={menuId}
         aria-label={`Open account menu for ${user.name}`}
+        title={user.name}
         className="inline-flex h-10 max-w-56 items-center gap-2 rounded-full border border-border/80 bg-surface px-1.5 pr-3 text-left transition-colors hover:border-primary/35 hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/10"
       >
         <AuthAvatar user={user} size="sm" />
@@ -164,12 +187,28 @@ export function UserMenu({
             Profile
           </Link>
           <Link
+            href="/create-event"
+            onClick={() => setOpen(false)}
+            className="flex h-10 items-center gap-2.5 rounded-xl px-3 text-sm font-semibold transition-colors hover:bg-surface-muted focus-visible:outline-offset-2"
+          >
+            <CalendarPlus className="size-4 text-muted" aria-hidden="true" />
+            Create event
+          </Link>
+          <Link
             href="/manage-events"
             onClick={() => setOpen(false)}
             className="flex h-10 items-center gap-2.5 rounded-xl px-3 text-sm font-semibold transition-colors hover:bg-surface-muted focus-visible:outline-offset-2"
           >
             <CalendarDays className="size-4 text-muted" aria-hidden="true" />
             Manage events
+          </Link>
+          <Link
+            href="/joined-events"
+            onClick={() => setOpen(false)}
+            className="flex h-10 items-center gap-2.5 rounded-xl px-3 text-sm font-semibold transition-colors hover:bg-surface-muted focus-visible:outline-offset-2"
+          >
+            <CalendarCheck2 className="size-4 text-muted" aria-hidden="true" />
+            Joined events
           </Link>
           <button
             type="button"
